@@ -3,13 +3,23 @@ package com.namanh.composebase
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.namanh.composebase.model.Tab
+import com.namanh.composebase.ui.components.ComposeBaseBottomNavigation
 import com.namanh.composebase.ui.theme.ComposeBaseTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,28 +28,67 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ComposeBaseTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+            ComposeBaseApp()
+        }
+    }
+}
+
+@Composable
+fun ComposeBaseApp() {
+    ComposeBaseTheme {
+        val navController = rememberNavController()
+
+        Scaffold(
+            bottomBar = {
+                ComposeBaseBottomNavigation(navController, Modifier)
             }
+        ) { padding ->
+            ComposeBaseNavHost(navController, Modifier.padding(padding))
+        }
+    }
+}
+
+@Composable
+fun ComposeBaseNavHost(navController: NavHostController, modifier: Modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = Tab.Home.route,
+        modifier = modifier
+    ) {
+        composable(Tab.Home.route) {
+            Greeting(name = Tab.Home.name)
+        }
+        composable(Tab.Feed.route) {
+            Greeting(name = Tab.Feed.name)
+        }
+        composable(Tab.Profile.route) {
+            Greeting(name = Tab.Profile.name)
         }
     }
 }
 
 @Composable
 fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.Center)
+    ) {
+        Text(
+            text = "Hello $name!",
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    Greeting(name = "Henry")
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    ComposeBaseTheme {
-        Greeting("Android")
-    }
+    ComposeBaseApp()
 }
