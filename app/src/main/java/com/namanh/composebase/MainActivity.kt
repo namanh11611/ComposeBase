@@ -14,12 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.namanh.composebase.model.Tab
 import com.namanh.composebase.ui.components.ComposeBaseBottomNavigation
+import com.namanh.composebase.ui.home.HomeScreen
 import com.namanh.composebase.ui.theme.ComposeBaseTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,8 +44,8 @@ fun ComposeBaseApp() {
             bottomBar = {
                 ComposeBaseBottomNavigation(navController, Modifier)
             }
-        ) { padding ->
-            ComposeBaseNavHost(navController, Modifier.padding(padding))
+        ) {
+            ComposeBaseNavHost(navController, Modifier)
         }
     }
 }
@@ -56,7 +58,7 @@ fun ComposeBaseNavHost(navController: NavHostController, modifier: Modifier) {
         modifier = modifier
     ) {
         composable(Tab.Home.route) {
-            Greeting(name = Tab.Home.name)
+            HomeScreen(modifier = modifier)
         }
         composable(Tab.Feed.route) {
             Greeting(name = Tab.Feed.name)
