@@ -1,63 +1,84 @@
 package com.namanh.composebase.ui.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.namanh.composebase.model.News
-
-const val fakeImage1 = "https://i.pinimg.com/736x/07/93/d0/0793d066fa0ceae94bc89f526153f308.jpg"
-const val fakeImage2 = "https://i.pinimg.com/originals/21/92/cb/2192cb75dbba15be24db8021d20d9588.png"
-const val lipsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+import com.namanh.composebase.data.model.Post
+import com.namanh.composebase.data.repository.Result
+import com.namanh.composebase.utils.collectAsStateWithLifecycle
 
 @Composable
-fun HomeScreen(modifier: Modifier) {
-    val newsList = mutableListOf<News>()
-    newsList.add(News(0, fakeImage1, "First news", lipsum))
-    newsList.add(News(1, fakeImage2, "Second news", lipsum))
-    newsList.add(News(2, fakeImage1, "Third news", lipsum))
-    newsList.add(News(3, fakeImage2, "Fourth news", lipsum))
-    newsList.add(News(4, fakeImage1, "Fifth news", lipsum))
-    newsList.add(News(5, fakeImage2, "Sixth news", lipsum))
-    newsList.add(News(6, fakeImage1, "Seventh news", lipsum))
-    newsList.add(News(7, fakeImage2, "Eighth news", lipsum))
-    newsList.add(News(8, fakeImage1, "Nine news", lipsum))
-    newsList.add(News(9, fakeImage2, "Ten news", lipsum))
-    
+fun HomeScreen(
+    modifier: Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val posts by viewModel.uiState.collectAsStateWithLifecycle()
+
+    when (posts) {
+        is Result.Loading -> Loading()
+        is Result.Success -> HomeContent(
+            posts = (posts as Result.Success<List<Post>>).data,
+            modifier = modifier
+        )
+        is Result.Error -> Text("Error")
+    }
+
+}
+
+@Composable
+fun Loading() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun HomeContent(posts: List<Post>, modifier: Modifier) {
     LazyColumn(modifier = modifier) {
-        items(newsList) { news ->
-            NewsItem(news)
+        items(posts) { post ->
+            PostItem(post)
         }
     }
 }
 
 @Composable
-fun NewsItem(news: News) {
+fun PostItem(post: Post) {
     Row(modifier = Modifier.padding(vertical = 10.dp)) {
         AsyncImage(
-            model = news.imageUrl,
+            model = post.urlToImage,
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp)
-                .padding(10.dp)
+                .padding(10.dp),
+            contentScale = ContentScale.Crop
         )
         Column {
             Text(
-                text = news.title,
+                text = post.title ?: "",
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
                 style = MaterialTheme.typography.h6
             )
             Text(
-                text = news.description,
+                text = post.description ?: "",
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3,
                 style = MaterialTheme.typography.body1
             )
         }
@@ -72,6 +93,21 @@ fun HomeScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun NewsItemPreview() {
-    NewsItem(news = News(0, fakeImage1, "First news", lipsum))
+fun PostItemPreview() {
+    val fakeImage = "https://i.pinimg.com/736x/07/93/d0/0793d066fa0ceae94bc89f526153f308.jpg"
+    val lipsum =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+
+    PostItem(
+        post = Post(
+            id = 0,
+            author = "Conan",
+            title = "First news",
+            description = lipsum,
+            url = fakeImage,
+            urlToImage = fakeImage,
+            publishedAt = "01-01-2022",
+            content = ""
+        )
+    )
 }

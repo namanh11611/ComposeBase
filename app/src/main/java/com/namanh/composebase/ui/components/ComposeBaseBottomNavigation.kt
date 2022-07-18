@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.namanh.composebase.model.Tab
+import com.namanh.composebase.data.model.Tab
 
 @Composable
 fun ComposeBaseBottomNavigation(navController: NavController, modifier: Modifier) {

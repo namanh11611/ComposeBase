@@ -1,4 +1,4 @@
-package com.namanh.composebase.model
+package com.namanh.composebase.data.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Feed

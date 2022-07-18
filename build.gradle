@@ -20,5 +20,7 @@ task clean(type: Delete) {
 
 ext {
     // App dependencies
+    lifecycleVersion = '2.5.0'
     roomVersion = '2.4.2'
+    retrofitVersion = '2.9.0'
 }
